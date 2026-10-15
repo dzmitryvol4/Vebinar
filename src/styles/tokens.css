@@ -1,29 +1,31 @@
-/* Design tokens: change colors, fonts and spacing here only. */
+/* Design tokens: change colors, fonts and spacing here only.
+   The brand is black and white on purpose — no dark theme, color comes from the works. */
 :root {
-  --color-bg: #ffffff;
-  --color-text: #1a1a1a;
-  --color-muted: #5f6368;
-  --color-accent: #2f5bea;
-  --color-border: #e3e3e3;
+  --ink: #000000;
+  --paper: #ffffff;
+  --graphite: #6b6b6b;
+  --silver: #a3a3a3;
 
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Unbounded Variable', 'Arial Black', sans-serif;
+  --font-text: 'Golos Text Variable', 'Helvetica Neue', Arial, sans-serif;
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 1rem;
-  --space-4: 2rem;
-  --space-5: 4rem;
+  /* Type scale (Bringhurst): 14 · 18 · 21 · 36 · 60 · 144 px */
+  --text-s: 0.875rem;
+  --text-m: 1.125rem;
+  --text-l: 1.3125rem;
+  --text-xl: clamp(1.75rem, 3vw, 2.25rem);
+  --text-2xl: clamp(2.25rem, 5vw, 3.75rem);
+  --text-mark: clamp(4.5rem, 17vw, 15rem);
 
-  --container: 72rem;
-  --radius: 0.5rem;
-}
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 3rem;
+  --space-5: 6rem;
+  --space-6: 10rem;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #121212;
-    --color-text: #ececec;
-    --color-muted: #a0a0a0;
-    --color-accent: #7c9cff;
-    --color-border: #2a2a2a;
-  }
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --tab-width: 2.75rem;
+  --tab-bar-height: 2.75rem;
+  --measure: 34rem;
 }

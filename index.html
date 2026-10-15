@@ -3,30 +3,161 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Описание сайта" />
-    <title>Сайт</title>
+    <meta
+      name="description"
+      content="675 agency — графический дизайн и брендинг: айдентика, упаковка и визуал для бизнеса."
+    />
+    <title>675 agency — графический дизайн и брендинг</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/styles/main.css" />
     <script type="module" src="/src/scripts/main.js"></script>
   </head>
   <body>
-    <header class="site-header">
-      <div class="container">
-        <a class="logo" href="/">Сайт</a>
-      </div>
-    </header>
+    <nav class="tabs" aria-label="Разделы">
+      <a class="tabs__tab" href="#top">675</a>
+      <a class="tabs__tab" href="#linen">Linen</a>
+      <a class="tabs__tab" href="#noise">Noise</a>
+      <a class="tabs__tab" href="#four-japanese">4 Japanese</a>
+      <a class="tabs__tab" href="#mellow">Мэллоу</a>
+      <a class="tabs__tab" href="#neopet">neopet</a>
+      <a class="tabs__tab" href="#about">О нас</a>
+      <a class="tabs__tab" href="#contact">Связь</a>
+    </nav>
 
-    <main>
-      <section class="hero container">
-        <h1>Заголовок сайта</h1>
-        <p>Здесь будет содержимое. Среда готова к работе.</p>
+    <main class="page">
+      <header class="intro" id="top" data-section>
+        <h1 class="intro__mark">675<br />agency</h1>
+        <p class="intro__lead">
+          Графический дизайн и брендинг: айдентика, упаковка и визуал, по которым бизнес узнают.
+        </p>
+      </header>
+
+      <section aria-labelledby="works-title">
+        <h2 id="works-title" class="visually-hidden">Работы</h2>
+
+        <!-- Описания написаны по изображениям — проверьте и дополните. -->
+        <article class="work" id="linen" data-section>
+          <img
+            class="work__image"
+            src="/works/linen-bio-science.webp"
+            width="900"
+            height="1263"
+            alt="Айдентика Linen Bio Science: модель в льняном платье за листом с логотипом и графическим паттерном"
+          />
+          <div class="work__text">
+            <h3 class="work__title">Linen Bio Science</h3>
+            <p class="work__kind">Айдентика</p>
+            <p>
+              Фирменный стиль бренда льняной одежды. Шрифтовой логотип и паттерн из линий напоминают
+              переплетение нитей.
+            </p>
+          </div>
+        </article>
+
+        <article class="work" id="noise" data-section>
+          <img
+            class="work__image"
+            src="/works/noise-craft.webp"
+            width="900"
+            height="1263"
+            alt="Банки пива Noise Craft и Noise Dark с чёрно-белым волнистым паттерном"
+          />
+          <div class="work__text">
+            <h3 class="work__title">Noise Craft</h3>
+            <p class="work__kind">Упаковка</p>
+            <p>
+              Лимитированная музыкальная серия крафтового пива. Паттерн на банках похож на звуковую
+              волну и шум.
+            </p>
+          </div>
+        </article>
+
+        <article class="work" id="four-japanese" data-section>
+          <img
+            class="work__image"
+            src="/works/four-japanese.webp"
+            width="484"
+            height="688"
+            alt="Фиолетовый плакат «Четыре японца»: четыре лица, собранные из чёрных штрихов"
+          />
+          <div class="work__text">
+            <h3 class="work__title">Четыре японца</h3>
+            <p class="work__kind">Айдентика</p>
+            <p>
+              Визуальный образ «4 Japanese 4You». Четыре лица собраны из простых штрихов, как
+              иероглифы.
+            </p>
+            <p class="work__award">Серебро World Brand Design Society</p>
+          </div>
+        </article>
+
+        <article class="work" id="mellow" data-section>
+          <img
+            class="work__image"
+            src="/works/mellow.webp"
+            width="900"
+            height="1270"
+            alt="Упаковка йогурта «Мэллоу» в виде прозрачного шара с клубничными шариками"
+          />
+          <div class="work__text">
+            <h3 class="work__title">Мэллоу</h3>
+            <p class="work__kind">Упаковка</p>
+            <p>
+              Клубничный йогурт с хрустящими шариками. Упаковка-сфера раскрывается на две половинки:
+              в одной йогурт, в другой топпинг.
+            </p>
+          </div>
+        </article>
+
+        <article class="work" id="neopet" data-section>
+          <img
+            class="work__image"
+            src="/works/neopet.webp"
+            width="900"
+            height="1263"
+            alt="Синий постер neopet с лапой, собранной из концентрических кругов"
+          />
+          <div class="work__text">
+            <h3 class="work__title">neopet</h3>
+            <p class="work__kind">Айдентика</p>
+            <p>
+              Бренд умных гаджетов для домашних животных. Отпечаток лапы из концентрических кругов
+              работает как сигнал датчика.
+            </p>
+          </div>
+        </article>
+      </section>
+
+      <!-- Текст «О нас» — черновик, замените своим. -->
+      <section class="about" id="about" data-section aria-labelledby="about-title">
+        <h2 id="about-title" class="about__title">О нас</h2>
+        <div class="about__body">
+          <p>
+            675 agency — студия графического дизайна. Придумываем, как бренд выглядит и звучит, и
+            собираем это в систему, с которой легко работать: от логотипа до упаковки и постов.
+          </p>
+          <h3 class="about__subtitle">Чем можем помочь</h3>
+          <ul class="about__services">
+            <li>Логотип и фирменный стиль</li>
+            <li>Упаковка и этикетка</li>
+            <li>Плакаты, афиши и визуал для соцсетей</li>
+            <li>Брендбук и правила использования</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Укажите ссылки: mailto:почта, https://t.me/ник, Behance. -->
+      <section class="contact" id="contact" data-section aria-labelledby="contact-title">
+        <h2 id="contact-title" class="contact__title">
+          Расскажите о своём бизнесе — предложим, каким может быть бренд
+        </h2>
+        <ul class="contact__links">
+          <li><a href="#">Написать на почту</a></li>
+          <li><a href="#">Написать в Telegram</a></li>
+          <li><a href="#">Смотреть на Behance</a></li>
+        </ul>
+        <p class="contact__copy">&copy; <span data-year></span> 675 agency</p>
       </section>
     </main>
-
-    <footer class="site-footer">
-      <div class="container">
-        <p>&copy; <span data-year></span></p>
-      </div>
-    </footer>
   </body>
 </html>

@@ -1,0 +1,111 @@
+/* Index tabs of a portfolio folder: the one bold element of the site. */
+.tabs {
+  position: fixed;
+  z-index: 10;
+  display: flex;
+  background: var(--paper);
+}
+
+.tabs__tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-s);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+@media (hover: hover) {
+  .tabs__tab:hover {
+    background: #f0f0f0;
+  }
+}
+
+.tabs__tab[aria-current='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.tabs__tab:focus-visible {
+  outline-offset: -5px;
+}
+
+/* Desktop: vertical tabs along the right edge, full viewport height. */
+@media (min-width: 48rem) {
+  .tabs {
+    inset: 0 0 0 auto;
+    flex-direction: column;
+    width: var(--tab-width);
+  }
+
+  .tabs__tab {
+    flex: 1;
+    writing-mode: vertical-rl;
+    margin-top: -1px;
+    animation: tab-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .tabs__tab:first-child {
+    margin-top: 0;
+  }
+
+  /* One orchestrated moment: dividers slide out of the edge one by one. */
+  .tabs__tab:nth-child(2) {
+    animation-delay: 0.05s;
+  }
+  .tabs__tab:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  .tabs__tab:nth-child(4) {
+    animation-delay: 0.15s;
+  }
+  .tabs__tab:nth-child(5) {
+    animation-delay: 0.2s;
+  }
+  .tabs__tab:nth-child(6) {
+    animation-delay: 0.25s;
+  }
+  .tabs__tab:nth-child(7) {
+    animation-delay: 0.3s;
+  }
+  .tabs__tab:nth-child(8) {
+    animation-delay: 0.35s;
+  }
+}
+
+@keyframes tab-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+/* Mobile: the same tabs as a strip along the top edge. */
+@media (max-width: 47.99rem) {
+  .tabs {
+    inset: 0 0 auto 0;
+    height: var(--tab-bar-height);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs__tab {
+    flex: 0 0 auto;
+    padding-inline: var(--space-2);
+    margin-left: -1px;
+  }
+
+  .tabs__tab:first-child {
+    margin-left: 0;
+  }
+}
