@@ -1,4 +1,4 @@
-import { projects, findProject } from '../data/projects.js';
+import { projects, findProject, findCategory } from '../data/projects.js';
 
 const el = (tag, props = {}, children = []) => {
   const node = Object.assign(document.createElement(tag), props);
@@ -19,17 +19,21 @@ export function renderProject(root) {
     return;
   }
 
+  const category = findCategory(project.category);
   document.title = `${project.title} — 675 agency`;
   document
     .querySelector('meta[name="description"]')
-    ?.setAttribute('content', `${project.kind}: ${project.title}. ${project.description[0]}`);
+    ?.setAttribute('content', `${category.title}: ${project.title}. ${project.description[0]}`);
 
   const next = projects[(projects.indexOf(project) + 1) % projects.length];
 
   root.append(
     el('div', { className: 'project__head' }, [
       el('h1', { className: 'project__title', textContent: project.title }),
-      el('p', { className: 'project__kind', textContent: project.kind }),
+      // The category leads back to the line filtered by it.
+      el('p', { className: 'project__kind' }, [
+        el('a', { href: `/?c=${category.id}`, textContent: category.title }),
+      ]),
       el(
         'div',
         { className: 'project__text' },

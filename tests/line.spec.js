@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { projects } from '../src/data/projects.js';
+import { projects, categories } from '../src/data/projects.js';
 
 test('line shows thumbnails of every project and loops', async ({ page }) => {
   await page.goto('/');
@@ -11,11 +11,58 @@ test('line shows thumbnails of every project and loops', async ({ page }) => {
   expect(km).toBeLessThan(675);
 });
 
-test('project index opens a project page', async ({ page }) => {
+test('category buttons filter the line', async ({ page }) => {
   await page.goto('/');
-  await page.locator('.index a[data-project="mellow"]').click();
-  await expect(page).toHaveURL(/project\.html\?p=mellow/);
-  await expect(page.locator('h1')).toHaveText('Мэллоу');
+  const ids = (sel) =>
+    page.locator(sel).evaluateAll((els) => [...new Set(els.map((el) => el.dataset.project))]);
+
+  await expect(page.locator('.filters__button')).toHaveText([
+    'Айдентика и брендинг',
+    'Упаковка',
+    'Книжные издания',
+    'Все проекты',
+  ]);
+  await expect(page.getByRole('button', { name: 'Все проекты' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await page.getByRole('button', { name: 'Айдентика и брендинг' }).click();
+  expect(await ids('.line__thumb')).toEqual(['linen']);
+  await expect(page).toHaveURL(/\?c=identity/);
+
+  await page.getByRole('button', { name: 'Упаковка' }).click();
+  expect(await ids('.line__thumb')).toEqual(['mellow']);
+
+  await page.getByRole('button', { name: 'Все проекты' }).click();
+  expect((await ids('.line__thumb')).sort()).toEqual(projects.map((p) => p.id).sort());
+  await expect(page).not.toHaveURL(/\?c=/);
+});
+
+test('category from the link is applied on load', async ({ page }) => {
+  await page.goto('/?c=books');
+  await expect(page.getByRole('button', { name: 'Книжные издания' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  const shown = await page
+    .locator('.line__thumb')
+    .evaluateAll((els) => [...new Set(els.map((el) => el.dataset.project))]);
+  expect(shown).toEqual(['len']);
+});
+
+test('thumbnail is reachable by keyboard and opens the project', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'keyboard navigation is a desktop scenario');
+  await page.goto('/');
+  const first = page.locator('.line__thumb[aria-label]').first();
+  await first.focus();
+  await expect(first).toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/project\.html\?p=/);
+});
+
+test('every project has a known category', async () => {
+  for (const p of projects) expect(categories.map((c) => c.id)).toContain(p.category);
 });
 
 test('hovering a thumbnail spills out its project images', async ({ page, isMobile }) => {
@@ -38,6 +85,7 @@ test('every project page shows its images and links to the next one', async ({ p
     await expect(page.locator('.project__images img')).toHaveCount(p.images.length);
     const next = projects[(i + 1) % projects.length];
     await expect(page.locator('.project__next a')).toHaveText(next.title);
+    await expect(page.locator(`.project__kind a[href="/?c=${p.category}"]`)).toBeVisible();
   }
 });
 

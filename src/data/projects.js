@@ -1,5 +1,5 @@
 // All portfolio projects. To add one: put images into public/works/<id>/
-// (NN.webp plus NN-thumb.webp, 160px tall) and add an entry here.
+// (NN.webp plus NN-thumb.webp, 160px tall) and add an entry here with one of the categories.
 const image = (project, n, width, height, alt) => {
   const name = String(n).padStart(2, '0');
   return {
@@ -11,11 +11,19 @@ const image = (project, n, width, height, alt) => {
   };
 };
 
+// Categories in the order of the buttons on the home page. «Все проекты» is added by the page itself.
+// A category without projects gets no button.
+export const categories = [
+  { id: 'identity', title: 'Айдентика и брендинг' },
+  { id: 'packaging', title: 'Упаковка' },
+  { id: 'books', title: 'Книжные издания' },
+];
+
 export const projects = [
   {
     id: 'len',
     title: 'Лён',
-    kind: 'Книга',
+    category: 'books',
     description: [
       'Книга о льне. Культурный феномен льна — уникальное явление, которое соединяет сакральные смыслы, народные ремесленные практики и современные технологические решения.',
       'Визуальное исследование позволяет увидеть не только технологическую сторону ремесла, но и то, что стояло за ним социально и культурно.',
@@ -30,7 +38,7 @@ export const projects = [
   {
     id: 'linen',
     title: 'Linen Bio Science',
-    kind: 'Айдентика',
+    category: 'identity',
     description: [
       'Айдентика российского бренда одежды из льна. Linen Bio Science — современный бренд полного цикла производства ткани и одежды, который переосмысляет привычное представление о льне.',
       'В основе философии бренда — внимательное отношение к материалу через научный подход. Лён может быть технологичным, выразительным, городским и актуальным. Бренд несёт в своих истоках философию труда поколений и непростого ремесла.',
@@ -53,7 +61,7 @@ export const projects = [
   {
     id: 'mellow',
     title: 'Мэллоу',
-    kind: 'Упаковка',
+    category: 'packaging',
     description: [
       'Йогурт «Мэллоу» — кисломолочный продукт, которым принято делиться. Упаковка в виде прозрачной сферы-капсулы разделяет топпинг и йогурт на две половины.',
       'Их можно смешивать между собой, а ещё лучше — делиться с близкими и пробовать новые вкусовые сочетания. Счастье в том, чтобы разделять гастрономию и новые ощущения.',
@@ -75,3 +83,4 @@ export const projects = [
 ];
 
 export const findProject = (id) => projects.find((p) => p.id === id);
+export const findCategory = (id) => categories.find((c) => c.id === id);

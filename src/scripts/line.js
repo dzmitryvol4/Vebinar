@@ -1,9 +1,10 @@
-import { projects } from '../data/projects.js';
+import { projects, categories, findCategory } from '../data/projects.js';
 
 const KM = 675;
 const DRIFT = 18; // px per second: the line keeps moving slowly on its own
 const EASE = 0.12;
 const DRAG_THRESHOLD = 6;
+const ALL = 'all';
 
 const mod = (n, m) => ((n % m) + m) % m;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -11,42 +12,53 @@ const canHover = matchMedia('(hover: hover)');
 
 const projectUrl = (id) => `/project.html?p=${id}`;
 
-function buildCopy() {
+// One run of the sequence. Only the first copy is reachable by keyboard and screen readers;
+// the rest repeat it to make the line endless.
+function buildCopy(list, primary) {
   const copy = document.createElement('div');
   copy.className = 'line__copy';
-  for (const project of projects) {
+  if (!primary) copy.setAttribute('aria-hidden', 'true');
+  for (const project of list) {
     const group = document.createElement('div');
     group.className = 'line__group';
-    for (const img of project.images) {
+    project.images.forEach((img, i) => {
       const link = document.createElement('a');
       link.className = 'line__thumb';
       link.href = projectUrl(project.id);
-      link.tabIndex = -1;
       link.dataset.project = project.id;
+      // One tab stop per project: its first thumbnail.
+      if (primary && i === 0) {
+        link.setAttribute(
+          'aria-label',
+          `${project.title}, ${findCategory(project.category).title}`,
+        );
+      } else {
+        link.tabIndex = -1;
+        if (primary) link.setAttribute('aria-hidden', 'true');
+      }
       const thumb = new Image(img.width, img.height);
       thumb.src = img.thumb;
       thumb.alt = '';
       thumb.draggable = false;
       link.append(thumb);
       group.append(link);
-    }
+    });
     copy.append(group);
   }
   return copy;
 }
 
-function buildIndex(list) {
-  for (const project of projects) {
-    const link = document.createElement('a');
-    link.href = projectUrl(project.id);
-    link.dataset.project = project.id;
-    link.append(`${project.title}, `);
-    const kind = document.createElement('span');
-    kind.className = 'index__kind';
-    kind.textContent = project.kind.toLowerCase();
-    link.append(kind);
+// Buttons for the categories that have projects, plus «Все проекты».
+function buildFilters(list) {
+  const used = categories.filter((c) => projects.some((p) => p.category === c.id));
+  for (const { id, title } of [...used, { id: ALL, title: 'Все проекты' }]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'filters__button';
+    button.dataset.category = id;
+    button.textContent = title;
     const item = document.createElement('li');
-    item.append(link);
+    item.append(button);
     list.append(item);
   }
 }
@@ -79,13 +91,15 @@ function layoutSpill(project, anchorX, box, spillHeight, clearance) {
 export function initLine(line) {
   const track = line.querySelector('[data-track]');
   const spill = line.querySelector('[data-spill]');
-  const index = document.querySelector('[data-index]');
+  const filters = document.querySelector('[data-filters]');
   const km = document.querySelector('[data-km]');
   const hint = document.querySelector('[data-hint]');
 
-  buildIndex(index);
+  buildFilters(filters);
   if (hint && !canHover.matches) hint.lastChild.textContent = 'Тяните линию';
 
+  const fromUrl = new URLSearchParams(location.search).get('c');
+  let category = filters.querySelector(`[data-category="${fromUrl}"]`) ? fromUrl : ALL;
   let cycle = 0;
   let pos = 0;
   let target = 0;
@@ -94,12 +108,16 @@ export function initLine(line) {
   let drag = null;
   let suppressClick = false;
 
+  const visibleProjects = () =>
+    category === ALL ? projects : projects.filter((p) => p.category === category);
+
   // Enough copies of the sequence to cover the screen at any offset.
   const render = () => {
-    track.replaceChildren(buildCopy());
+    const list = visibleProjects();
+    track.replaceChildren(buildCopy(list, true));
     cycle = track.firstElementChild.getBoundingClientRect().width;
     const copies = Math.ceil(line.clientWidth / cycle) + 1;
-    for (let i = 1; i < copies; i++) track.append(buildCopy());
+    for (let i = 1; i < copies; i++) track.append(buildCopy(list, false));
   };
 
   const hideHint = () => hint?.classList.add('is-hidden');
@@ -109,7 +127,6 @@ export function initLine(line) {
     line.classList.remove('has-active');
     spill.classList.remove('is-open');
     track.querySelectorAll('.is-active').forEach((t) => t.classList.remove('is-active'));
-    index.querySelectorAll('.is-active').forEach((a) => a.classList.remove('is-active'));
   };
 
   const open = (id, anchorX) => {
@@ -119,9 +136,6 @@ export function initLine(line) {
     line.classList.add('has-active');
     track.querySelectorAll('.line__thumb').forEach((t) => {
       t.classList.toggle('is-active', t.dataset.project === id);
-    });
-    index.querySelectorAll('a').forEach((a) => {
-      a.classList.toggle('is-active', a.dataset.project === id);
     });
 
     const box = line.getBoundingClientRect();
@@ -154,18 +168,16 @@ export function initLine(line) {
     requestAnimationFrame(() => requestAnimationFrame(() => spill.classList.add('is-open')));
   };
 
-  // Center of the visible thumb of a project that is closest to the screen center.
-  const anchorFor = (id) => {
+  const thumbCenter = (thumb) => {
     const box = line.getBoundingClientRect();
-    let best = box.width / 2;
-    let bestDistance = Infinity;
-    for (const t of track.querySelectorAll(`[data-project="${id}"]`)) {
-      const r = t.getBoundingClientRect();
-      const center = r.left + r.width / 2 - box.left;
-      const distance = Math.abs(center - box.width / 2);
-      if (distance < bestDistance) [best, bestDistance] = [center, distance];
-    }
-    return best;
+    const r = thumb.getBoundingClientRect();
+    return r.left + r.width / 2 - box.left;
+  };
+
+  const apply = () => {
+    const offset = mod(pos, cycle);
+    track.style.transform = `translateX(${-offset}px)`;
+    km.textContent = String(Math.floor((offset / cycle) * KM));
   };
 
   const tick = (now) => {
@@ -173,11 +185,33 @@ export function initLine(line) {
     last = now;
     if (!active && !drag && !reducedMotion.matches) target += DRIFT * dt;
     pos += (target - pos) * (reducedMotion.matches ? 1 : EASE);
-    const offset = mod(pos, cycle);
-    track.style.transform = `translateX(${-offset}px)`;
-    km.textContent = String(Math.floor((offset / cycle) * KM));
+    apply();
     requestAnimationFrame(tick);
   };
+
+  const setCategory = (id) => {
+    category = id;
+    filters.querySelectorAll('button').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.category === id));
+    });
+    const url = new URL(location.href);
+    if (id === ALL) url.searchParams.delete('c');
+    else url.searchParams.set('c', id);
+    history.replaceState(null, '', url);
+    close();
+    render();
+    // The filtered line starts from its first project.
+    pos = target = 0;
+    apply();
+    track.classList.remove('is-entering');
+    void track.offsetWidth;
+    track.classList.add('is-entering');
+  };
+
+  filters.addEventListener('click', (e) => {
+    const button = e.target.closest('button[data-category]');
+    if (button && button.dataset.category !== category) setCategory(button.dataset.category);
+  });
 
   line.addEventListener(
     'wheel',
@@ -223,24 +257,29 @@ export function initLine(line) {
   track.addEventListener('pointerover', (e) => {
     const thumb = e.target.closest('.line__thumb');
     if (!thumb || drag || !canHover.matches || e.pointerType !== 'mouse') return;
-    const box = line.getBoundingClientRect();
-    const r = thumb.getBoundingClientRect();
-    open(thumb.dataset.project, r.left + r.width / 2 - box.left);
+    open(thumb.dataset.project, thumbCenter(thumb));
   });
   track.addEventListener('pointerleave', close);
 
-  const fromIndex = (e) => {
-    const link = e.target.closest('a[data-project]');
-    if (link) open(link.dataset.project, anchorFor(link.dataset.project));
-  };
-  index.addEventListener('pointerover', (e) => canHover.matches && fromIndex(e));
-  index.addEventListener('focusin', fromIndex);
-  index.addEventListener('pointerleave', close);
-  index.addEventListener('focusout', (e) => {
-    if (!index.contains(e.relatedTarget)) close();
+  // Keyboard: bring the focused thumbnail into view (it is in the first copy,
+  // so an offset between 0 and one cycle always shows it), then spill its project.
+  track.addEventListener('focusin', (e) => {
+    const thumb = e.target.closest('.line__thumb');
+    if (!thumb) return;
+    const x = thumb.offsetLeft + thumb.offsetWidth / 2;
+    const offset = Math.min(Math.max(x - line.clientWidth / 2, 0), cycle - 1);
+    pos = target = pos - mod(pos, cycle) + offset;
+    apply();
+    active = null;
+    open(thumb.dataset.project, thumbCenter(thumb));
+    hideHint();
+  });
+  track.addEventListener('focusout', (e) => {
+    if (!track.contains(e.relatedTarget)) close();
   });
 
   document.addEventListener('keydown', (e) => {
+    if (e.target.closest?.('.line__thumb')) return;
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
       target += e.key === 'ArrowRight' ? 240 : -240;
       close();
@@ -257,6 +296,6 @@ export function initLine(line) {
     }, 150);
   });
 
-  render();
+  setCategory(category);
   requestAnimationFrame(tick);
 }
