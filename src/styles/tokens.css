@@ -1,0 +1,33 @@
+/* Design tokens: change colors, fonts and spacing here only.
+   The brand is black and white on purpose — no dark theme, color comes from the works. */
+:root {
+  --ink: #000000;
+  --paper: #ffffff;
+  --graphite: #6b6b6b;
+  --silver: #a3a3a3;
+
+  --font-display: 'Unbounded Variable', 'Arial Black', sans-serif;
+  --font-text: 'Golos Text Variable', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Type scale (Bringhurst): 14 · 18 · 21 · 36 · 60 · 144 px */
+  --text-s: 0.875rem;
+  --text-m: 1.125rem;
+  --text-l: 1.3125rem;
+  --text-xl: clamp(1.75rem, 3vw, 2.25rem);
+  --text-2xl: clamp(2.25rem, 5vw, 3.75rem);
+  --text-logo: var(--text-l);
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 3rem;
+  --space-5: 6rem;
+  --space-6: 10rem;
+
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --measure: 34rem;
+
+  /* The line on the home page */
+  --thumb-height: clamp(3.5rem, 7vh, 5rem);
+  --spill-height: clamp(8rem, 24vh, 15rem);
+}
