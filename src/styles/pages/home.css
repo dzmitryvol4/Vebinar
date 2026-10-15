@@ -1,0 +1,161 @@
+/* Home: the endless line of works */
+.home {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.home__tagline {
+  color: var(--graphite);
+}
+
+.line {
+  position: relative;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.line.is-dragging {
+  cursor: grabbing;
+}
+
+/* The 1px line itself, across the whole screen */
+.line::before {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto;
+  border-top: 1px solid var(--ink);
+}
+
+.line__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: max-content;
+  will-change: transform;
+}
+
+.line__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Projects are separated by a short stretch of bare line. The margin is on every group,
+   so copies of the sequence tile without a seam. */
+.line__group {
+  margin-right: var(--space-4);
+}
+
+.line__copy {
+  display: flex;
+  align-items: center;
+}
+
+.line__thumb {
+  display: block;
+  flex: none;
+  transition: opacity 0.25s;
+}
+
+.line__thumb img {
+  height: var(--thumb-height);
+  width: auto;
+  max-width: none;
+  pointer-events: none;
+}
+
+.line.has-active .line__thumb:not(.is-active) {
+  opacity: 0.2;
+}
+
+/* Images of the hovered project spill out of the line */
+.spill {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.spill__image {
+  position: absolute;
+  height: var(--spill-height);
+  width: auto;
+  max-width: none;
+  transform: translate(var(--from-x), var(--from-y)) scale(0.2);
+  opacity: 0;
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.2s;
+  transition-delay: var(--delay);
+}
+
+.spill.is-open .spill__image {
+  transform: none;
+  opacity: 1;
+}
+
+/* Bottom bar: project index on the left, distance on the right */
+.home__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--gutter);
+}
+
+.index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.index a {
+  text-decoration: none;
+  color: var(--graphite);
+  transition: color 0.2s;
+}
+
+.index a:hover,
+.index a:focus-visible,
+.index a.is-active {
+  color: var(--ink);
+}
+
+.index__kind {
+  color: var(--graphite);
+}
+
+.distance {
+  flex: none;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.distance__hint {
+  color: var(--graphite);
+  font-size: var(--text-s);
+  transition: opacity 0.4s;
+}
+
+.distance__hint.is-hidden {
+  opacity: 0;
+}
+
+@media (max-width: 47.99rem) {
+  .home__footer {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .distance {
+    text-align: left;
+  }
+}

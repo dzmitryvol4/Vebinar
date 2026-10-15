@@ -2,5 +2,7 @@
 @import '@fontsource-variable/golos-text/wght.css';
 @import './tokens.css';
 @import './base.css';
-@import './tabs.css';
-@import './sections.css';
+@import './site.css';
+@import './pages/home.css';
+@import './pages/project.css';
+@import './pages/about.css';
